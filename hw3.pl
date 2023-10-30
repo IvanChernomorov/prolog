@@ -19,11 +19,11 @@ main(Start, End):-
     ->
         length(Path, Length),
         sum_weight(Path, SumWeight),
-        writeln("Кратчайший путь" - Path),
-        writeln("Длина пути" : Length),
-        writeln("Суммарный вес пути" = SumWeight)
+        writeln("РљСЂР°С‚С‡Р°Р№С€РёР№ РїСѓС‚СЊ" - Path),
+        writeln("Р”Р»РёРЅР° РїСѓС‚Рё" : Length),
+        writeln("РЎСѓРјРјР°СЂРЅС‹Р№ РІРµСЃ РїСѓС‚Рё" = SumWeight)
     ;
-        writeln("Пути нет!")).
+        writeln("РџСѓС‚Рё РЅРµС‚!")).
 
 sum_weight([_],0).
 sum_weight([Node1, Node2|Tail], SumWeight):-
