@@ -6,24 +6,41 @@ edge(b, e, 2).
 edge(d, e, 4).
 edge(e, f, 2).
 
-bfs([[End|Tail]|_], End, _, ReversedPath) :-
+all_paths([[End|Tail]], End, ReversedPath) :-
     reverse([End|Tail], ReversedPath).
-bfs([[Cur|Tail]|Rest], End, Visited, ShortestPath):-
-    append([Cur], Visited, NewVisited),
-    findall([Node, Cur|Tail], (edge(Cur, Node, _), \+ member(Node, NewVisited)), Next),
-    append(Rest, Next, Queue),
-    bfs(Queue, End, NewVisited, ShortestPath).
+all_paths([[End|Tail]|Rest], End, AllPaths):-
+   all_paths(Rest, End, [Head|Last]),
+   reverse([End|Tail], ReversedPath),
+   (  is_list(Head)
+   -> append([ReversedPath], [Head|Last], AllPaths)
+   ;
+    AllPaths = [ReversedPath, [Head|Last]]
+   ).
+all_paths([[Cur|Tail]|Rest], End, AllPaths):-
+    findall([Node, Cur|Tail], (edge(Cur, Node, _), \+ member(Node, [Cur|Tail])), Next),
+    append(Next, Rest, Stack),
+    all_paths(Stack, End, AllPaths).
+
 
 main(Start, End):-
-    (   bfs([[Start]], End, [], Path)
+    (   all_paths([[Start]], End, AllPaths)
     ->
-        length(Path, Length),
-        sum_weight(Path, SumWeight),
-        writeln("Кратчайший путь" - Path),
-        writeln("Длина пути" : Length),
-        writeln("Суммарный вес пути" = SumWeight)
+    min_weight(AllPaths, Min, MinPath),
+    writeln("Кротчайший по весу путь" : MinPath),
+    writeln("Суммарный вес" = Min)
     ;
-        writeln("Пути нет!")).
+    writeln("Пути нет!")).
+
+min_weight([Path], Min, [Path]):-
+    sum_weight(Path, Min).
+min_weight([Head|Tail], Min, Path):-
+    min_weight(Tail, TailMin, TailPath),
+    sum_weight(Head, Weight),
+    (Weight < TailMin
+    ->
+    Min = Weight, Path = Head
+    ;
+    Min = TailMin, Path= TailPath).
 
 sum_weight([_],0).
 sum_weight([Node1, Node2|Tail], SumWeight):-
